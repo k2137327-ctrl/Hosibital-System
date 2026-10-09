@@ -1,0 +1,63 @@
+﻿@model IEnumerable<HospitalSystem.Models.Appointment>
+
+@{
+    ViewData["Title"] = "Booked Appointments";
+}
+
+<div class="container py-5">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-primary mb-1">Booked Appointments</h2>
+            <p class="text-muted mb-0">List of all reserved hospital appointments</p>
+        </div>
+        
+        <a asp-action="Doctors" class="btn btn-primary px-3 shadow-sm">
+            + Book New Appointment
+        </a>
+    </div>
+
+     
+    <div class="card shadow-sm border-0 rounded-3 overflow-hidden">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="table-primary">
+                    <tr>
+                        <th class="py-3">Patient Name</th>
+                        <th class="py-3">Doctor Name</th>
+                        <th class="py-3">Specialization</th>
+                        <th class="py-3">Appointment Date</th>
+                        <th class="py-3">Appointment Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (!Model.Any())
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-5">
+                                <h5>No appointments booked yet.</h5>
+                                <p class="small">Click "Book New Appointment" to make your first booking.</p>
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        @foreach (var app in Model)
+                        {
+                            <tr>
+                                <td class="fw-bold">@app.PatientName</td>
+                                <td>@app.Doctor?.Name</td>
+                                <td>
+                                    <span class="badge bg-secondary">@app.Doctor?.Specialization</span>
+                                </td>
+                                <td>@app.AppointmentDate.ToString("yyyy-MM-dd (dddd)")</td>
+                                <td>
+                                    <span class="badge bg-success fs-6">@app.AppointmentTime</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

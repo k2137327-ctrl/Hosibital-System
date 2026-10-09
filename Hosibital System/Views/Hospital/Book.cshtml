@@ -1,0 +1,71 @@
+﻿ @model HospitalSystem.Models.Appointment
+
+@{
+    ViewData["Title"] = "Book Appointment";
+    var doctor = ViewBag.Doctor as HospitalSystem.Models.Doctor;
+    var timeSlots = ViewBag.TimeSlots as List<string> ?? new List<string>();
+}
+
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card shadow-sm border-0 p-4">
+                <h3 class="text-center fw-bold text-primary mb-3">Book an Appointment</h3>
+
+                 
+                @if (doctor != null)
+                {
+                    <div class="alert alert-info text-center py-2 mb-4">
+                        Booking with: <strong>@doctor.Name</strong> - <span class="text-muted">@doctor.Specialization</span>
+                    </div>
+                }
+
+                <form asp-action="Book" method="post">
+                    
+                    <input type="hidden" asp-for="DoctorId" />
+
+                     
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                     
+                    <div class="mb-3">
+                        <label asp-for="PatientName" class="form-label fw-semibold">Patient Name</label>
+                        <input asp-for="PatientName" class="form-control" placeholder="Enter patient full name" />
+                        <span asp-validation-for="PatientName" class="text-danger small"></span>
+                    </div>
+
+                     
+                    <div class="mb-3">
+                        <label asp-for="AppointmentDate" class="form-label fw-semibold">Appointment Date</label>
+                        <input asp-for="AppointmentDate" type="date" class="form-control" min="@DateTime.Today.ToString("yyyy-MM-dd")" />
+                        <span asp-validation-for="AppointmentDate" class="text-danger small"></span>
+                        <small class="text-muted d-block mt-1">Available days: Sunday to Thursday only.</small>
+                    </div>
+
+                     
+                    <div class="mb-4">
+                        <label asp-for="AppointmentTime" class="form-label fw-semibold">Available Time Slots</label>
+                        <select asp-for="AppointmentTime" class="form-select">
+                            <option value="">Select Time Slot (9:00 AM - 4:30 PM)</option>
+                            @foreach (var slot in timeSlots)
+                            {
+                                <option value="@slot">@slot</option>
+                            }
+                        </select>
+                        <span asp-validation-for="AppointmentTime" class="text-danger small"></span>
+                    </div>
+
+                     
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary w-100 py-2">Confirm Booking</button>
+                        <a asp-action="Doctors" class="btn btn-outline-secondary py-2">Cancel</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

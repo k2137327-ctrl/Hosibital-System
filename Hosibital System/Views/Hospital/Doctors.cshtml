@@ -1,0 +1,99 @@
+﻿@model IEnumerable<HospitalSystem.Models.Doctor>
+
+@{
+    ViewData["Title"] = "Available Doctors";
+    var specializations = ViewBag.Specializations as List<string> ?? new List<string>();
+    int currentPage = ViewBag.CurrentPage;
+    int totalPages = ViewBag.TotalPages;
+    string searchName = ViewBag.SearchName as string ?? "";
+    string selectedSpec = ViewBag.Specialization as string ?? "";
+}
+
+<div class="container py-4">
+    <div class="text-center mb-4">
+        <h2 class="fw-bold text-primary">Available Doctors</h2>
+        <p class="text-muted">Find the right specialist and book your appointment</p>
+    </div>
+
+ 
+    <div class="card p-3 mb-4 shadow-sm border-0 bg-light">
+        <form method="get" asp-action="Doctors" class="row g-2 align-items-center">
+            <div class="col-md-5">
+                <input type="text" name="searchName" value="@searchName" class="form-control" placeholder="Search by Doctor Name..." />
+            </div>
+            <div class="col-md-4">
+                <select name="specialization" class="form-select">
+                    <option value="">All Specializations</option>
+                    @foreach (var spec in specializations)
+                    {
+                        <option value="@spec" selected="@(selectedSpec == spec ? "selected" : null)">@spec</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <button type="submit" class="btn btn-primary w-100">Filter</button>
+                <a asp-action="Doctors" class="btn btn-outline-secondary">Reset</a>
+            </div>
+        </form>
+    </div>
+
+     
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center text-muted py-5">
+                <h5>No doctors found matching your criteria.</h5>
+            </div>
+        }
+        else
+        {
+            @foreach (var doctor in Model)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm border-0 text-center p-3">
+                         
+                        <div class="d-flex justify-content-center mt-2">
+                            <img src="~/images/@doctor.ImageUrl"
+                                 onerror="this.src='https://ui-avatars.com/api/?name=@doctor.Name&background=0D8ABC&color=fff&size=128';"
+                                 class="rounded-circle shadow-sm"
+                                 style="width: 120px; height: 120px; object-fit: cover;"
+                                 alt="@doctor.Name" />
+                        </div>
+
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold text-dark mt-2">@doctor.Name</h5>
+                            <span class="badge bg-info text-dark px-3 py-2 rounded-pill">@doctor.Specialization</span>
+                        </div>
+
+                        <div class="card-footer bg-transparent border-0 pt-0">
+                             
+                            <a asp-action="Book" asp-route-doctorId="@doctor.Id" class="btn btn-success w-100 py-2">
+                                Book Appointment
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+
+         @if (totalPages > 1)
+    {
+        <nav class="mt-5">
+            <ul class="pagination justify-content-center">
+                <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                    <a class="page-link" asp-action="Doctors" asp-route-page="@(currentPage - 1)" asp-route-searchName="@searchName" asp-route-specialization="@selectedSpec">Previous</a>
+                </li>
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                    <li class="page-item @(i == currentPage ? "active" : "")">
+                        <a class="page-link" asp-action="Doctors" asp-route-page="@i" asp-route-searchName="@searchName" asp-route-specialization="@selectedSpec">@i</a>
+                    </li>
+                }
+                <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                    <a class="page-link" asp-action="Doctors" asp-route-page="@(currentPage + 1)" asp-route-searchName="@searchName" asp-route-specialization="@selectedSpec">Next</a>
+                </li>
+            </ul>
+        </nav>
+    }
+</div>
